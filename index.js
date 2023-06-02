@@ -95,8 +95,8 @@ app.use(function (req, res, next) {
     res.render('404')
    })
 
-app.listen(5050, () => {
-console.log(banner.string + `\n\n\nPort: ${5050}\n\n`)
+app.listen(port, () => {
+console.log(banner.string + `\n\n\nPort: ${port}\n\n`)
   //_______________________ ┏ Connect Database ┓ _______________________\\
 
 mongoose.connect(keymongodb, { useNewUrlParser: true, useUnifiedTopology: true },).then(async () => {
