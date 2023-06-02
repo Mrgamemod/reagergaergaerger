@@ -106,7 +106,7 @@ mongoose.connect(keymongodb, { useNewUrlParser: true, useUnifiedTopology: true }
       let obj = {RequestToday: 0,
         TotalRequest: 0};
       await dataweb.create(obj)
-      console.log('DATA WEBSITE Sussces Create');
+      console.log('DATA WEBSITE Sussces Create')
   }
 });
 })
