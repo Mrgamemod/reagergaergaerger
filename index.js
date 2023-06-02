@@ -105,19 +105,13 @@ app.use(function (req, res, next) {
     res.render('404')
    })
 
-app.listen(port, () => {
-    console.log(`
-    █████╗ ██████╗ ██╗     █████╗ ██╗     ██████╗ ██╗███████╗
-   ██╔══██╗██╔══██╗██║    ██╔══██╗██║     ██╔══██╗██║██╔════╝
-   ███████║██████╔╝██║    ███████║██║     ██████╔╝██║███████╗
-   ██╔══██║██╔═══╝ ██║    ██╔══██║██║     ██╔═══╝ ██║╚════██║
-   ██║  ██║██║     ██║    ██║  ██║███████╗██║     ██║███████║
-   ╚═╝  ╚═╝╚═╝     ╚═╝    ╚═╝  ╚═╝╚══════╝╚═╝     ╚═╝╚══════╝ V2 
-			                           @alipje29
-								 
-Server running on http://localhost:` + port)
-console.log(`Hello ${creator}`)
-})
+// Use PORT provided in environment or default to 3000
+const port = process.env.PORT || 3000;
+
+// Listen on `port` and 0.0.0.0
+app.listen(port, "0.0.0.0", function () {
+  // ...
+});
 
 module.exports = app
 
