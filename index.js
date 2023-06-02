@@ -1,4 +1,5 @@
 require('./settings')
+const { banner,success, Sukses,  } = require('./lib/simple')
 const express = require('express'); 
 const app = express();
 const favicon = require('serve-favicon')
@@ -15,7 +16,9 @@ const cron = require('node-cron');
 const bodyParser = require('body-parser')
 const User = require('./model/user');
 const dataweb = require('./model/DataWeb');
-
+let chalk = require("chalk")
+// Use PORT provided in environment or default to 3000
+const port = process.env.PORT || 3000;
 //_______________________ ┏ Funtion ┓ _______________________\\
 
 async function resetapi() {
@@ -34,24 +37,12 @@ async function ResetRequestToday() {
 
 cors = require('cors'),
 secure = require('ssl-express-www');
-app.use(favicon(path.join(__dirname,'public','images','favicon.ico')))
+app.use(favicon(path.join(__dirname,'public','favicon','favicon.ico')))
 var main = require('./routes/main'),api = require('./routes/api')
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/view',);
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-
-//_______________________ ┏ Connect Database ┓ _______________________\\
-
-mongoose.connect(keymongodb, { useNewUrlParser: true, useUnifiedTopology: true },).then(async () => {
-    console.log("Connected !")
-    let limit = await dataweb.findOne();
-    if(limit === null){
-        let obj = {RequestToday: 0};
-        await dataweb.create(obj)
-        console.log('DATA WEBSITE Sussces Create');
-    }
-});
 
 //_______________________ ┏ CronJob For Reset Limit ┓ _______________________\\
 
@@ -60,7 +51,7 @@ cron.schedule('0 0 0 * * *', () => {
     ResetRequestToday()
   }, {
     scheduled: true,
-    timezone: "Asia/Kuala_Lumpur"
+    timezone: "Asia/Jakarta"
   });
   
   //Reset All User Apikey Limit setiap sebulan
@@ -68,7 +59,7 @@ cron.schedule('0 0 0 * * *', () => {
     resetapi()
   }, {
     scheduled: true,
-    timezone: "Asia/Kuala_Lumpur"
+    timezone: "Asia/Jakarta"
   });
 
 //_______________________ ┏ Code ┓ _______________________\\
@@ -105,13 +96,21 @@ app.use(function (req, res, next) {
     res.render('404')
    })
 
-// Use PORT provided in environment or default to 3000
-const port = process.env.PORT || 3000;
-
-// Listen on `port` and 0.0.0.0
 app.listen(port, "0.0.0.0", function () {
-  // ...
+console.log(banner.string + `\n\n\nPort: ${port}\n\n`)
+  //_______________________ ┏ Connect Database ┓ _______________________\\
+
+mongoose.connect(keymongodb, { useNewUrlParser: true, useUnifiedTopology: true },).then(async () => {
+  console.log((chalk.white.bgBlue.bold('\n\nCONNECTED TO MONGODB')))
+  let limit = await dataweb.findOne();
+  if(limit === null){
+      let obj = {RequestToday: 0,
+        TotalRequest: 0};
+      await dataweb.create(obj)
+      console.log('DATA WEBSITE Sussces Create');
+  }
 });
+})
 
 module.exports = app
 
