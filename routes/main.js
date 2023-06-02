@@ -1,0 +1,58 @@
+__path = process.cwd()
+require('../settings');
+const express = require('express');
+const router = express.Router();
+const passport = require('passport');
+require('../controller/passportLocal')(passport);
+const authRoutes = require('./auth');
+const apiRoutes = require('./api')
+const dataweb = require('../model/DataWeb');
+const User = require('../model/user');
+
+//_______________________ ┏ Function ┓ _______________________\\
+
+function checkAuth(req, res, next) {
+    if (req.isAuthenticated()) {
+        res.set('Cache-Control', 'no-cache, private, no-store, must-revalidate, post-check=0, pre-check=0');
+        next();
+    } else {
+        req.flash('error_messages', "Please Login to continue !");
+        res.redirect('/login');
+    }
+}
+
+async function getApikey(id) {
+    let limit = await dataweb.findOne();
+    let users = await User.findOne({_id: id})
+    return {apikey: users.apikey, username: users.username, checklimit: users.limitApikey, verified : users.verified, RequestToday: limit.RequestToday, TotalRequest: limit.TotalRequest};
+}
+
+
+//_______________________ ┏ Router ┓ _______________________\\
+
+router.get('/', (req, res) => {
+        res.render("home");
+});
+
+router.get('/docs',  checkAuth, async (req, res) => {
+  let getinfo =  await getApikey(req.user.id)
+  let { apikey, username, checklimit, verified , RequestToday, TotalRequest } = getinfo
+    res.render("docs", { username: username, verified: verified, apikey: apikey, limit: checklimit , RequestToday: RequestToday, TotalRequest: TotalRequest });
+    
+});
+
+
+router.get("/logout", (req, res) => {
+    req.logout(req.user, err => {
+      if(err) return next(err);
+      res.redirect("/login");
+    });
+  });
+
+
+
+router.use(authRoutes);
+router.use(apiRoutes);
+module.exports = router;
+
+
